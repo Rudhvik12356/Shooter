@@ -4,16 +4,18 @@ WIDTH = 900
 HEIGHT = 700
 TITLE = "GALAGA"
 
-ship = Actor("galaga")
-enemy = Actor("bug")
+direction = 1
 
+ship = Actor("galaga")
 ship.pos = (WIDTH/2, HEIGHT-60)
 
 enemies = []
-enemies.append(enemy)
+for i in range(8):
+    enemy = Actor("bug")
+    enemies.append(enemy)
 
-enemies[-1].x = random.randint(50, WIDTH-50)
-enemies[-1].y = -150
+    enemies[-1].x = 80 * i + 100
+    enemies[-1].y = -150
 
 bullets = []
 
@@ -29,10 +31,12 @@ def draw():
     for i in enemies: 
         i.draw()
     for i in bullets:
-        i.draw()    
+        i.draw()
+        
+    screen.draw.text("Score: " + str(score), (50, 50))        
         
 def update():
-    global score, speed
+    global score, speed, direction
      
     if keyboard.left:
          ship.x -= speed
@@ -44,11 +48,14 @@ def update():
         if ship.x > WIDTH-50:
             ship.x = WIDTH-50
             
+    if len(enemies) > 0 and (enemies[0].x < 50 or enemies[-1].x > WIDTH - 50):
+        direction = direction * (-1)
+        
     for i in enemies:
-        i.y += 5
+        i.x += 2 * direction
+        i.y += 3
         if i.y > HEIGHT:
             i.y = -100
-            i.x = random.randint(50, WIDTH-50)
         for j in bullets:
             if j.colliderect(i):
                 score += 100
@@ -59,7 +66,7 @@ def update():
         if i.y < 0:
             bullets.remove(i)
         else:
-            i.y -= 1            
+            i.y -= 5            
 
 def on_key_down(key):
     if key == keys.SPACE:
